@@ -1,0 +1,180 @@
+-- drop database hotel;
+
+create database hotel;
+
+use hotel;
+
+CREATE TABLE hotel.customer (
+id int(4) NOT NULL,
+id_card_number varchar(16) NULL,
+name varchar(255) NULL,
+place_of_birth varchar(255) NULL,
+date_of_birth date NULL,
+gender varchar(1) NULL,
+address varchar(255) NULL,
+CONSTRAINT customer_pk PRIMARY KEY (id)
+);
+
+CREATE TABLE hotel.room_category (
+id int(4) NOT null auto_increment,
+name varchar(15) NULL,
+description varchar(255) NULL,
+active bool NULL,
+created_by varchar(15) NULL,
+created_at timestamp NULL,
+CONSTRAINT room_category_pk PRIMARY KEY (id)
+);
+
+CREATE TABLE hotel.room (
+id int(4) NOT NULL,
+room_category_id int(4) NOT NULL,
+name varchar(15) NULL,
+description varchar(255) NULL,
+active bool NULL,
+created_by varchar(15) NULL,
+created_at timestamp NULL,
+CONSTRAINT room_type_pk PRIMARY KEY (id)
+);
+
+ALTER TABLE hotel.room ADD CONSTRAINT room_type_fk FOREIGN KEY
+(room_category_id) REFERENCES room_category(id);
+
+CREATE TABLE hotel.stock_room_category (
+id int(4) NOT null auto_increment,
+room_category_id int(4) NOT NULL,
+stock_total int(4) NULL,
+stock_available int(4) NULL,
+stock_ordered int(4) NULL,
+created_by varchar(15) NULL,
+created_at timestamp NULL,
+updated_by varchar(15) NULL,
+updated_at timestamp NULL,
+CONSTRAINT stock_room_pk PRIMARY KEY (id)
+);
+
+ALTER TABLE hotel.stock_room_category ADD CONSTRAINT stock_room_category_fk FOREIGN KEY
+(room_category_id) REFERENCES room_category(id);
+
+CREATE TABLE hotel.price_room_category (
+id int(4) NOT null auto_increment,
+room_category_id int(4) NOT NULL,
+price float NULL,
+discount float NULL,
+created_by varchar(15) NULL,
+created_at timestamp NULL,
+updated_by varchar(15) NULL,
+updated_at timestamp NULL,
+CONSTRAINT price_room_category_pk PRIMARY KEY (id)
+);
+
+ALTER TABLE hotel.price_room_category ADD CONSTRAINT price_room_category_fk FOREIGN KEY
+(room_category_id) REFERENCES room_category(id);
+
+CREATE TABLE hotel.transaction_history (
+id int(4) NOT null auto_increment,
+number varchar(5) NULL,
+customer_id int(4) NULL,
+created_by varchar(15) NULL,
+created_at timestamp NULL,
+CONSTRAINT transaction_history_pk PRIMARY KEY (id)
+);
+
+ALTER TABLE hotel.transaction_history ADD CONSTRAINT transaction_history_fk FOREIGN
+KEY (customer_id) REFERENCES customer(id);
+
+CREATE TABLE hotel.transaction_history_detail (
+id int(4) NOT null auto_increment,
+transaction_history_id int(4) NULL,
+room_id int(4) NULL,
+price int(4) NULL,
+start timestamp NULL,
+end timestamp NULL,
+total_night int(4) null,
+created_by varchar(15) NULL,
+created_at timestamp NULL,
+updated_by varchar(15) NULL,
+updated_at timestamp NULL,
+CONSTRAINT transaction_history_detail_pk PRIMARY KEY (id)
+);
+
+ALTER TABLE hotel.transaction_history_detail ADD CONSTRAINT
+transaction_history_detail_fk FOREIGN KEY (transaction_history_id) REFERENCES
+transaction_history(id);
+
+ALTER TABLE hotel.transaction_history_detail ADD CONSTRAINT
+transaction_history_detail_fk_1 FOREIGN KEY (room_id) REFERENCES room(id);
+
+INSERT INTO hotel.customer
+(id,id_card_number,name,place_of_birth,date_of_birth,gender,address) VALUES
+(1,'11323','Jimmy','Malang','2020-05-08','L','Jl Magelang 01'),
+(2,'67565','Fallen','Jakarta','2020-05-08','P','Jl Tembus 002'),
+(3,'20030','Jaka','Surabaya','2020-05-08','L','Gang Gabus jalan utama');
+
+INSERT INTO hotel.room_category
+(name,description,active,created_by,created_at) VALUES
+('Large','size >= 7x7',true,'admin','2020-05-08 12:41:15.754'),
+('Medium','size >= 5.5x5.5',true,'admin','2020-05-08 12:41:17.440'),
+('Small','size >= 4.5x4.5',true,'admin','2020-05-08 12:41:20.020'),
+('Family','size >= 5x7',false,'admin','2020-05-08 12:42:31.414'),
+('Exclusive','-',false,'admin','2020-05-08 12:42:33.386');
+
+INSERT INTO hotel.price_room_category
+(room_category_id,price,discount,created_by,created_at,updated_by,updated_at) VALUES
+(1,500000,0,'admin','2020-05-08 13:06:09.595','admin','2020-05-08 13:06:20.797')
+,(2,350000,0,'admin','2020-05-08 13:06:11.176','admin','2020-05-08 13:06:23.074')
+,(3,275000,0,'admin','2020-05-08 13:06:12.538','admin','2020-05-08 13:06:24.753');
+
+INSERT INTO hotel.stock_room_category
+(room_category_id,stock_total,stock_available,stock_ordered,created_by,created_at,updated_by,updated_at) VALUES
+(1,3,2,1,'admin','2020-05-08 13:10:01.426','admin','2020-05-08 13:10:19.525'),
+(3,2,2,0,'admin','2020-05-08 13:10:04.595','admin','2020-05-08 13:10:21.046'),
+(2,3,0,3,'admin','2020-05-08 13:10:06.376','admin','2020-05-08 13:10:24.044');
+
+INSERT INTO hotel.transaction_history
+(number,customer_id,created_by,created_at) VALUES
+('BK001',1,'admin','2020-05-08 13:12:28.876')
+,('BK002',3,'admin','2020-05-08 13:12:31.560')
+,('BK003',1,'admin','2020-05-08 13:12:33.869')
+,('BK004',2,'admin','2020-05-08 13:12:35.268');
+
+insert into hotel.room
+(id,room_category_id, name, description, active, created_by, created_at) values
+(1,1,'a','-',true,'admin','2020-05-08 13:12:28.876'),
+(2,2,'b','-',true,'admin','2020-05-08 13:12:31.560'),
+(6,2,'c','-',false,'admin','2020-05-08 13:12:33.869'),
+(7,2,'d','-',false,'admin','2020-05-08 13:12:35.268'),
+(10,3,'e','-',true,'admin','2020-05-08 13:12:37.865');
+
+INSERT INTO hotel.transaction_history_detail
+(transaction_history_id,room_id,price,start,end,total_night,created_by,created_at,updated_by,
+updated_at) VALUES
+(1,1,500000,'2020-05-08 13:35:34.949','2020-05-09 13:35:38.000',1,'admin','2020-05-09
+13:35:38.000','admin','2020-05-09 13:35:38.000')
+,(1,2,500000,'2020-05-08 13:35:37.295','2020-05-09 13:35:38.000',1,'admin','2020-05-09
+13:35:38.000','admin','2020-05-09 13:35:38.000')
+,(2,6,275000,'2020-05-08 13:35:38.000','2020-05-09 13:35:38.000',1,'admin','2020-05-09
+13:35:38.000','admin','2020-05-09 13:35:38.000')
+,(2,7,275000,'2020-05-08 13:35:38.000','2020-05-10 13:35:38.000',2,'admin','2020-05-09
+13:35:38.000','admin','2020-05-09 13:35:38.000')
+,(3,10,275000,'2020-05-08 13:35:38.000','2020-05-09 13:35:38.000',1,'admin','2020-05-09
+13:35:38.000','admin','2020-05-09 13:35:38.000');
+
+select * from customer;
+
+select name, gender, date_of_birth from customer;
+
+select * from customer where id = 1;
+
+select * from customer where name like '%Fal%';
+
+truncate table customer;
+delete from customer;
+delete from customer where id = 1;
+
+UPDATE customer set name = 'tomo' WHERE id=1;
+
+select name as nama_customer, number as nomor_booking from customer
+inner join transaction_history on customer.id = transaction_history.customer_id;
+
+select room_category.name as name_room_category, room.name as name_room from room
+inner join room_category on room.room_category_id = room_category.id;
